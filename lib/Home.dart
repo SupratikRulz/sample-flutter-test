@@ -1,19 +1,11 @@
 import 'package:flutter/material.dart';
-// import 'package:solo_flutter_example/example.service.dart';
+import 'package:flutter/services.dart';
 
 /* 
 PART - 1
 ---------
-   Use ```ExampleService.instance.getToken()``` to get the access_token
-   Show a loading indicator when data is being fetched and keep 'Get Details' button disabled
-   If error, show a error text and hide loading indicator
-   If success, show the access token in the screen and enable 'Get Details' button
-*/
-/* 
-PART - 2
----------
   If the user clicks on 'Get Details' button,
-  it will interact with the flutter plugin which you will create for the iOS.
+  it will interact with the flutter plugin which you will create for the iOS/Android.
 
 curl -X 'GET' \
   'https://user-service.solobeta.co/v1/user/context' \
@@ -21,9 +13,8 @@ curl -X 'GET' \
   -H 'Content-Type: application/json' \
   -H 'Authorization: Bearer $access_token'
 
-  iOS part of the plugin will do a GET api call to specified API in cUrl above with the access_token
+  The plugin will do a GET api call to specified API in cUrl above with the access_token
   that is passed to the flutter plugin and will return flutter parsable object.
-  In case of android device it will return "Not Implemented" as a value of error key of the parsable object.
 */
 
 class MyHomePage extends StatefulWidget {
@@ -35,6 +26,12 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  static const platform =
+      MethodChannel('com.example.solo_flutter_example/getUserDetails');
+  String accessToken =
+      "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6Ik1PRkRUdTZ6VjBXRlFjVUY0YkxwRCJ9.eyJodHRwczovL3NvbG8uY28vdjEvdXNlcl9pZCI6MTAwMDAwMDE0MiwiaHR0cHM6Ly9zb2xvLmNvL3YxL3N0cmlwZV9hY2NvdW50X2lkIjoiYWNjdF8xTERSbWk0Sk9scGhNeWdUIiwiaXNzIjoiaHR0cHM6Ly9iZXRhLXNvbG8tcGF5LnVzLmF1dGgwLmNvbS8iLCJzdWIiOiJzbXN8NjJiMmZlMDY2ZjFhMWE1Y2JiM2E2ZTcxIiwiYXVkIjpbImh0dHBzOi8vc29sby5jby92MS8iXSwiaWF0IjoxNjU2NDA3NjA2LCJleHAiOjE2NTY0OTQwMDYsImF6cCI6ImRNMFVzMXFmbU9ta1FrdFgzQVp3U001VzdRR1p0QUpEIiwic2NvcGUiOiJvcGVuaWQgcHJvZmlsZSBlbWFpbCBvZmZsaW5lX2FjY2VzcyJ9.A3lgMs-9IbbqHfekTFySP72w-Nb71AE_apvblfD4PjCJsLBTKASG9g75-3VV6_Ro6V0dY6nz6MXBXPRrsFsr0XkOJ9bqn6920tWSUQez-D9UewLSt9pOcL3Bba08w5U3XJY0NBXqQIWzWGzIAhhqU8sIpAvwauSd1IsTYRAySHpP5QYP2sY5LRLaCa0YNxkHkcViCwhmKYN3vJt67eCBeGJRZgUK8C4gZ2fpDX3SlQ_8Hhq6K9Rggny71Td-pmPuGuoDXVxw_oORQXvEIk5UWl3yY12VZIHKtWDXTK80hlGvIrJHeeQXyAfnjBxeX09UfLYiIe0slPcEvOZChyxJjg";
+  String _firstName = '';
+
   @override
   void initState() {
     super.initState();
@@ -42,7 +39,6 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    var token = "";
     return Scaffold(
       appBar: AppBar(
         title: const Text("Solo Example"),
@@ -52,7 +48,7 @@ class _MyHomePageState extends State<MyHomePage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             Text(
-              'Token received: $token',
+              'First Name received: $_firstName',
             ),
             const SizedBox(
               height: 24,
@@ -67,8 +63,12 @@ class _MyHomePageState extends State<MyHomePage> {
                     style: TextStyle(color: Color(0xFFFFFFFF)),
                   ),
                 ),
-                onPressed: () {
-                  // Interact with Flutter SDK with the access_token (that is received by calling ExampleService.instance.getToken())
+                onPressed: () async {
+                  dynamic result = await platform.invokeListMethod(
+                      'getUserDetails', {'access_token': accessToken});
+                  setState(() {
+                    _firstName = result['first_name'];
+                  });
                 }),
           ],
         ),
