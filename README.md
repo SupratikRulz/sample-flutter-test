@@ -27,7 +27,7 @@ flutter build ios
   -H 'accept: application/json' \
   -H 'Content-Type: application/json' \
   -H 'Authorization: Bearer $access_token'
-- Your native plugin will do a GET api call to the cUrl mentioned above with the `access_token` that is passed to the plugin and will return flutter parsable object. It is assumed that the function name flutter with interact with is `getUserDetails`. And the method channel name is `com.example.solo_flutter_example/getUserDetails`
+- Your native plugin will do a GET api call to the cUrl mentioned above with the `access_token` that is passed to the plugin and will return flutter parsable object. It is assumed that the function name that flutter code will interact with is `getUserDetails`, and the method channel name is `com.example.solo_flutter_example/getUserDetails`
 
 ### Useful Links
 - Android: https://docs.flutter.dev/development/platform-integration/platform-channels#step-3-add-an-android-platform-specific-implementation
